@@ -45,11 +45,11 @@ export default function TabLayout() {
       screenOptions={{
         tabBarStyle: {
           height: Platform.OS === 'ios' ? SPACING.tabBarHeight.ios : SPACING.tabBarHeight.android,
-          paddingBottom:
-            Platform.OS === 'ios' ? SPACING.tabBarPadding.ios : SPACING.tabBarPadding.android,
+          paddingBottom: Platform.OS === 'ios' ? SPACING.tabBarPadding.ios : SPACING.tabBarPadding.android,
           backgroundColor: COLORS.white,
           borderTopWidth: 1,
           borderTopColor: COLORS.gray[100],
+          paddingHorizontal: Platform.OS === 'ios' ? 16 : 8,
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.gray[400],
@@ -59,24 +59,32 @@ export default function TabLayout() {
           shadowOpacity: 0,
           borderBottomWidth: 1,
           borderBottomColor: COLORS.gray[100],
+          height: Platform.OS === 'ios' ? 88 : 64,
         },
         headerTitleStyle: {
-          display: 'none',
+          fontSize: 18,
+          fontWeight: '600',
         },
         headerLeft: () => (
           <Image
             source={{
               uri: 'https://i.pinimg.com/originals/b9/f2/a6/b9f2a640b168cdb9f865185facee4cd3.png',
             }}
-            style={{ width: 120, height: 30, marginLeft: 15 }}
+            style={{
+              width: Platform.OS === 'ios' ? 120 : 100,
+              height: 30,
+              marginLeft: Platform.OS === 'ios' ? 16 : 12,
+            }}
             resizeMode="contain"
           />
         ),
         headerRight: () => (
-          <>
-            <HeaderButton onPress={() => router.push('/account')} />
-          </>
+          <HeaderButton 
+            onPress={() => router.push('/account')} 
+            style={{ marginRight: Platform.OS === 'ios' ? 16 : 12 }}
+          />
         ),
+        safeAreaInsets: { top: Platform.OS === 'ios' ? 44 : 0 },
       }}>
       {TAB_SCREENS.map((screen) => (
         <Tabs.Screen
@@ -85,7 +93,17 @@ export default function TabLayout() {
           options={{
             title: screen.label,
             headerShown: screen.headerShown,
-            tabBarIcon: ({ color }) => <TabBarIcon name={screen.icon} color={color} />,
+            tabBarIcon: ({ color, size }) => (
+              <TabBarIcon 
+                name={screen.icon} 
+                color={color} 
+                size={Platform.OS === 'ios' ? 28 : 24} 
+              />
+            ),
+            tabBarLabelStyle: {
+              fontSize: 12,
+              marginBottom: Platform.OS === 'ios' ? 0 : 4,
+            },
           }}
         />
       ))}
