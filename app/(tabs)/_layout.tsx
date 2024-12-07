@@ -1,9 +1,10 @@
 import { Tabs } from 'expo-router';
-import { Platform, Image } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { Platform, Image, View, StyleSheet } from 'react-native';
+import { COLORS, SPACING, SIZES, FONTS, SHADOWS } from '../../constants/theme';
 import { TabBarIcon } from '../../components/TabBarIcon';
 import { useRouter } from 'expo-router';
 import { HeaderButton } from '../../components/HeaderButton';
+import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 
 const TAB_SCREENS = [
   {
@@ -40,16 +41,32 @@ const TAB_SCREENS = [
 
 export default function TabLayout() {
   const router = useRouter();
+  const { width, height, isSmallDevice, isShortDevice } = useScreenDimensions();
+  
+  const getTabBarHeight = () => {
+    if (Platform.OS === 'ios') {
+      return isShortDevice ? 70 : 85;
+    }
+    return isSmallDevice ? 56 : 64;
+  };
+
+  const getHeaderHeight = () => {
+    if (Platform.OS === 'ios') {
+      return isShortDevice ? 70 : 88;
+    }
+    return isSmallDevice ? 56 : 64;
+  };
+
   return (
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? SPACING.tabBarHeight.ios : SPACING.tabBarHeight.android,
-          paddingBottom: Platform.OS === 'ios' ? SPACING.tabBarPadding.ios : SPACING.tabBarPadding.android,
+          height: getTabBarHeight(),
           backgroundColor: COLORS.white,
           borderTopWidth: 1,
           borderTopColor: COLORS.gray[100],
-          paddingHorizontal: Platform.OS === 'ios' ? 16 : 8,
+          paddingHorizontal: width * 0.02,
+          ...SHADOWS.small,
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.gray[400],
@@ -57,34 +74,41 @@ export default function TabLayout() {
           backgroundColor: COLORS.white,
           elevation: 0,
           shadowOpacity: 0,
+          height: getHeaderHeight(),
           borderBottomWidth: 1,
           borderBottomColor: COLORS.gray[100],
-          height: Platform.OS === 'ios' ? 88 : 64,
         },
         headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: '600',
+          fontSize: isSmallDevice ? SIZES.h4 - 2 : SIZES.h4,
+          fontFamily: FONTS.medium,
+          color: COLORS.secondary,
         },
         headerLeft: () => (
-          <Image
-            source={{
-              uri: 'https://i.pinimg.com/originals/b9/f2/a6/b9f2a640b168cdb9f865185facee4cd3.png',
-            }}
-            style={{
-              width: Platform.OS === 'ios' ? 120 : 100,
-              height: 30,
-              marginLeft: Platform.OS === 'ios' ? 16 : 12,
-            }}
-            resizeMode="contain"
-          />
+          <View style={styles.headerLeft}>
+            <Image
+              source={{
+                uri: 'https://i.pinimg.com/originals/b9/f2/a6/b9f2a640b168cdb9f865185facee4cd3.png',
+              }}
+              style={[
+                styles.headerLogo,
+                {
+                  width: width * 0.25,
+                  height: height * 0.04,
+                },
+              ]}
+              resizeMode="contain"
+            />
+          </View>
         ),
         headerRight: () => (
           <HeaderButton 
             onPress={() => router.push('/account')} 
-            style={{ marginRight: Platform.OS === 'ios' ? 16 : 12 }}
+            style={styles.headerButton}
           />
         ),
-        safeAreaInsets: { top: Platform.OS === 'ios' ? 44 : 0 },
+        safeAreaInsets: { 
+          top: Platform.OS === 'ios' ? 44 : 0 
+        },
       }}>
       {TAB_SCREENS.map((screen) => (
         <Tabs.Screen
@@ -93,20 +117,52 @@ export default function TabLayout() {
           options={{
             title: screen.label,
             headerShown: screen.headerShown,
-            tabBarIcon: ({ color, size }) => (
+            tabBarIcon: ({ color, focused }) => (
               <TabBarIcon 
                 name={screen.icon} 
                 color={color} 
-                size={Platform.OS === 'ios' ? 28 : 24} 
+                size={width * 0.06}
+                style={[
+                  styles.tabIcon,
+                  { opacity: focused ? 1 : 0.8 }
+                ]}
               />
             ),
-            tabBarLabelStyle: {
-              fontSize: 12,
-              marginBottom: Platform.OS === 'ios' ? 0 : 4,
-            },
+            tabBarLabelStyle: [
+              styles.tabLabel,
+              {
+                fontSize: width * 0.03,
+              }
+            ],
           }}
         />
       ))}
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  headerLeft: {
+    paddingLeft: SPACING.md,
+    justifyContent: 'center',
+  },
+  headerLogo: {
+    minWidth: 100,
+    maxWidth: 150,
+    minHeight: 25,
+    maxHeight: 35,
+  },
+  headerButton: {
+    marginRight: SPACING.md,
+    backgroundColor: COLORS.background.secondary,
+    padding: SPACING.sm,
+    borderRadius: SIZES.borderRadius,
+  },
+  tabIcon: {
+    marginBottom: Platform.OS === 'ios' ? -5 : 0,
+  },
+  tabLabel: {
+    fontFamily: FONTS.medium,
+    marginBottom: Platform.OS === 'ios' ? 0 : SPACING.xs,
+  },
+});

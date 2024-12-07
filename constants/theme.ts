@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 export const COLORS = {
   primary: '#fc8019',
   secondary: '#282c3f',
@@ -22,6 +24,13 @@ export const COLORS = {
   },
 } as const;
 
+export const SCREEN_SIZES = {
+  xs: 320,
+  sm: 375,
+  md: 414,
+  lg: 428,
+} as const;
+
 export const SPACING = {
   xs: 4,
   sm: 8,
@@ -30,44 +39,61 @@ export const SPACING = {
   xl: 32,
   xxl: 48,
   tabBarHeight: {
-    ios: 90,
-    android: 64,
+    ios: Platform.OS === 'ios' ? (SCREEN_SIZES.sm > 375 ? 90 : 80) : 90,
+    android: Platform.OS === 'android' ? (SCREEN_SIZES.sm > 375 ? 64 : 56) : 64,
   },
   tabBarPadding: {
-    ios: 30,
-    android: 5,
+    ios: Platform.OS === 'ios' ? (SCREEN_SIZES.sm > 375 ? 30 : 25) : 30,
+    android: Platform.OS === 'android' ? (SCREEN_SIZES.sm > 375 ? 5 : 3) : 5,
   },
-  screenPadding: 16,
-  sectionPadding: 24,
+  screenPadding: SCREEN_SIZES.sm > 375 ? 16 : 12,
+  sectionPadding: SCREEN_SIZES.sm > 375 ? 24 : 20,
 } as const;
 
 export const SIZES = {
   // Typography
-  h1: 32,
-  h2: 24,
-  h3: 20,
-  h4: 18,
-  body: 16,
-  caption: 14,
-  small: 12,
+  h1: SCREEN_SIZES.sm > 375 ? 32 : 28,
+  h2: SCREEN_SIZES.sm > 375 ? 24 : 22,
+  h3: SCREEN_SIZES.sm > 375 ? 20 : 18,
+  h4: SCREEN_SIZES.sm > 375 ? 18 : 16,
+  body: SCREEN_SIZES.sm > 375 ? 16 : 14,
+  caption: SCREEN_SIZES.sm > 375 ? 14 : 12,
+  small: SCREEN_SIZES.sm > 375 ? 12 : 10,
   
   // UI Elements
-  tabIcon: 20,
-  tabLabel: 12,
-  buttonHeight: 48,
-  inputHeight: 44,
-  borderRadius: 8,
+  tabIcon: SCREEN_SIZES.sm > 375 ? 24 : 20,
+  tabLabel: SCREEN_SIZES.sm > 375 ? 12 : 10,
+  buttonHeight: SCREEN_SIZES.sm > 375 ? 48 : 44,
+  inputHeight: SCREEN_SIZES.sm > 375 ? 44 : 40,
+  borderRadius: SCREEN_SIZES.sm > 375 ? 8 : 6,
   iconSize: {
-    small: 16,
-    medium: 24,
-    large: 32,
+    small: SCREEN_SIZES.sm > 375 ? 16 : 14,
+    medium: SCREEN_SIZES.sm > 375 ? 24 : 20,
+    large: SCREEN_SIZES.sm > 375 ? 32 : 28,
   },
 } as const;
 
 export const FONTS = {
-  regular: 'System',
-  medium: 'System-Medium',
-  bold: 'System-Bold',
+  regular: Platform.select({
+    ios: 'System',
+    android: 'Roboto',
+    default: 'System',
+  }),
+  medium: Platform.select({
+    ios: 'System-Medium',
+    android: 'Roboto-Medium',
+    default: 'System-Medium',
+  }),
+  bold: Platform.select({
+    ios: 'System-Bold',
+    android: 'Roboto-Bold',
+    default: 'System-Bold',
+  }),
+  semibold: Platform.select({
+    ios: 'System-Semibold',
+    android: 'Roboto-Medium',
+    default: 'System-Semibold',
+  }),
 } as const;
 
 export const SHADOWS = {
