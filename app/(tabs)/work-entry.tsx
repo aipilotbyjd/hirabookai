@@ -1,3 +1,9 @@
+import { Text, View } from "react-native";
+
 export default function WorkEntry() {
-  return <div>Work Entry</div>;
+  return (
+    <View>
+      <Text>Work Entry</Text>
+    </View>
+  );
 }
